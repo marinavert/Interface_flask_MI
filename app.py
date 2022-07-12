@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request
 import pickle, os
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates', static_folder='static')
 
 import numpy as np
 from canny import canny_edge_detector
@@ -85,7 +85,7 @@ def computeScore(foodsegpath, platesegpath, inputratio):
     foodvolume = np.count_nonzero(foodimg)
     platevolume = np.count_nonzero(plateimg) 
     score = 100 * (1 + inputratio - foodvolume/platevolume)
-    return (score if score < 100 else 100)
+    return (int(score) if score < 100 else 100)
 
 def computeRatio(foodsegpath, platesegpath):
     import cv2 as cv
@@ -127,8 +127,9 @@ def get_output():
         plateseg_path = "static/plateseg/" + img.filename
         score = computeScore(foodseg_path, plateseg_path, 1e-3)
         ratio = computeRatio(foodseg_path, plateseg_path)
+        str_ratio = "{:.2f}".format(ratio)
 
-    return render_template("index.html", img_path = img_path, canny_path = canny_path, foodseg_path=foodseg_path, plateseg_path=plateseg_path, score=score, ratio=ratio)
+    return render_template("index.html", img_path = img_path, canny_path = canny_path, foodseg_path=foodseg_path, plateseg_path=plateseg_path, score=score, ratio=str_ratio)
 
 
 if __name__ =='__main__':
