@@ -11,7 +11,7 @@
 <body>
 
 <div class="container">
-  <h1 class="jumbotron bg-primary">Image Classfication</h1>
+  <h1 class="jumbotron bg-primary">Leftover estimation</h1>
   <br><br>
   <form class="form-horizontal" action="/submit" method="post" enctype="multipart/form-data">
 
@@ -39,9 +39,11 @@
 <center>
   <img src="{{img_path}}" height="256px"/>
   <img src="{{canny_path}}" height="256px"/>
+  <br/>
   <img src="{{foodseg_path}}" height="256px"/>
   <img src="{{plateseg_path}}" height="256px"/>
   <br /> 
+  <br/>
   <span>Your ratio is: {{ratio}}. </span>
   <br /> 
   <span>Your score is: {{score}}. </span>
