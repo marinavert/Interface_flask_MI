@@ -191,7 +191,15 @@ def computeScore(foodsegpath, platesegpath, inputratio):
     platevolume = np.count_nonzero(plateimg) 
     print(foodvolume, platevolume)
     score = 100 * (1 + inputratio - foodvolume/platevolume)
-    return score 
+    return score
+
+def computeRatio(foodsegpath, platesegpath):
+    import cv2 as cv
+    foodimg = cv.imread(foodsegpath)
+    plateimg = cv.imread(platesegpath)
+    foodvolume = np.count_nonzero(foodimg)
+    platevolume = np.count_nonzero(plateimg) 
+    return foodvolume/platevolume
 
 # plate_model.predict()
 # food_model.predict()
@@ -224,8 +232,9 @@ def get_output():
         foodseg_path = "static/foodseg/" + img.filename
         plateseg_path = "static/plateseg/" + img.filename
         score = computeScore(foodseg_path, plateseg_path, 0.1)
+        ratio = computeRatio(foodseg_path, plateseg_path)
 
-    return render_template("index.html", img_path = img_path, canny_path = canny_path, foodseg_path=foodseg_path, plateseg_path=plateseg_path, score=score)
+    return render_template("index.html", img_path = img_path, canny_path = canny_path, foodseg_path=foodseg_path, plateseg_path=plateseg_path, score=score, ratio=ratio)
 
 
 if __name__ =='__main__':
