@@ -48,9 +48,14 @@ def mask_to_image(mask: np.ndarray):
         return Image.fromarray((np.argmax(mask, axis=0) * 255 / mask.shape[0]).astype(np.uint8))
 
 
-def mainpredict(imgpath, cannypath): 
+def mainpredict(imgpath, cannypath, scale): 
     img = Image.open(imgpath)
     canny = Image.open(cannypath)
+
+    w, h = img.size
+    newW, newH = int(scale * w), int(scale * h)
+    img = img.resize((newW, newH), resample=Image.BICUBIC)
+    canny = canny.resize((newW, newH), resample=Image.BICUBIC)
 
     device='cpu'
 
@@ -79,9 +84,8 @@ def computeScore(foodsegpath, platesegpath, inputratio):
     plateimg = cv.imread(platesegpath)
     foodvolume = np.count_nonzero(foodimg)
     platevolume = np.count_nonzero(plateimg) 
-    print(foodvolume, platevolume)
     score = 100 * (1 + inputratio - foodvolume/platevolume)
-    return score
+    return (score if score < 100 else 100)
 
 def computeRatio(foodsegpath, platesegpath):
     import cv2 as cv
@@ -118,10 +122,10 @@ def get_output():
         img_canny = maincanny(img_path)
         canny_path = "static/canny/" + img.filename
 
-        mainpredict(img_path, canny_path)
+        mainpredict(img_path, canny_path, 0.1)
         foodseg_path = "static/foodseg/" + img.filename
         plateseg_path = "static/plateseg/" + img.filename
-        score = computeScore(foodseg_path, plateseg_path, 0.1)
+        score = computeScore(foodseg_path, plateseg_path, 1e-3)
         ratio = computeRatio(foodseg_path, plateseg_path)
 
     return render_template("index.html", img_path = img_path, canny_path = canny_path, foodseg_path=foodseg_path, plateseg_path=plateseg_path, score=score, ratio=ratio)
