@@ -84,7 +84,9 @@ def computeScore(foodsegpath, platesegpath, inputratio):
     plateimg = cv.imread(platesegpath)
     foodvolume = np.count_nonzero(foodimg)
     platevolume = np.count_nonzero(plateimg) 
-    score = 100 * (1 + inputratio - foodvolume/platevolume)
+    score = 100 * (-1.25*(foodvolume/platevolume-0.8))
+    if score<0:
+        score=0
     return (int(score) if score < 100 else 100)
 
 def computeRatio(foodsegpath, platesegpath):
